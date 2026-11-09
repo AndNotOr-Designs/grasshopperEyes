@@ -1,0 +1,148 @@
+# And!Or Designs
+# 2026-11-09 initial program
+# Board: Seeed XIAO ESP32C3 (Seeed Studio)
+# Definition: definitions/boards/seeed-xiao-esp32c3/manifest.yaml
+
+esphome:
+  name: ct-ctrl-grasshopper
+  friendly_name: ct-ctrl-grasshopper
+
+esp32:
+  variant: esp32c3
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: "d47OcvAkWlxdXfU/3QEOTGquDKBfYYAV6lgEK98XDrE="
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: ct-ctrl-grassho Fallback Hotspot
+    password: "Els08nR1uyLZ"
+
+captive_portal:
+
+output:
+  - platform: ledc
+    id: leftEyeRed
+    pin: GPIO6
+  - platform: ledc
+    id: leftEyeGreen
+    pin: GPIO7
+  - platform: ledc
+    id: leftEyeBlue
+    pin: GPIO21
+    max_power: 0.4
+  - platform: ledc
+    id: rightEyeRed
+    pin: GPIO9
+  - platform: ledc
+    id: rightEyeGreen
+    pin: GPIO8
+  - platform: ledc
+    id: rightEyeBlue
+    pin: GPIO20
+    max_power: 0.4
+
+light:
+  - platform: rgb
+    name: leftEye
+    id: leftEye
+    blue: leftEyeBlue
+    green: leftEyeGreen
+    red: leftEyeRed
+    icon: "mdi:eye"
+  - platform: rgb
+    name: rightEye
+    id: rightEye
+    blue: rightEyeBlue
+    green: rightEyeGreen
+    red: rightEyeRed
+    icon: "mdi:eye"
+
+mqtt:
+  broker: 10.4.20.2
+
+sensor:
+  - platform: mqtt_subscribe
+    name: Wake word detected - orange
+    id: grasshopperWakeWord
+    topic: hermes/hotword/grasshopper_raspberry-pi/detected
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: '0xFF6600'
+              color_brightness: '1'
+              transition_length: 1ms
+          - light.turn_on:
+              id: rightEye
+              color: '0xFF6600'
+              color_brightness: '1'
+              transition_length: 1ms
+  - platform: mqtt_subscribe
+    name: grasshopperChecking
+    id: grasshopperChecking
+    topic: hermes/asr/textCaptured
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: blue
+          - light.turn_on:
+              id: rightEye
+              color: blue
+  - platform: mqtt_subscribe
+    name: grasshopperResponding
+    id: grasshopperResponding
+    topic: hermes/tts/say
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: red
+          - light.turn_on:
+              id: rightEye
+              color: red
+  - platform: mqtt_subscribe
+    name: grasshopperListening
+    id: grasshopperListening
+    topic: hermes/tts/sayFinished
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 2s
+          - light.turn_on:
+              id: rightEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 2s
+  - platform: mqtt_subscribe
+    name: grasshopperError
+    id: grasshopperError
+    topic: hermes/nlu/intentNotRecognized
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 5s
+          - light.turn_on:
+              id: rightEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 5s
+
