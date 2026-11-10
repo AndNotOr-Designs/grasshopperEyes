@@ -1,5 +1,6 @@
 # And!Or Designs
 # 2026-11-09 initial program
+# 2026-11-10 added interaction with Crestron
 # Board: Seeed XIAO ESP32C3 (Seeed Studio)
 # Definition: definitions/boards/seeed-xiao-esp32c3/manifest.yaml
 
@@ -33,23 +34,23 @@ captive_portal:
 
 output:
   - platform: ledc
-    id: leftEyeRed
+    id: rightEyeRed
     pin: GPIO6
   - platform: ledc
-    id: leftEyeGreen
+    id: rightEyeGreen
     pin: GPIO7
   - platform: ledc
-    id: leftEyeBlue
+    id: rightEyeBlue
     pin: GPIO21
     max_power: 0.4
   - platform: ledc
-    id: rightEyeRed
+    id: leftEyeRed
     pin: GPIO9
   - platform: ledc
-    id: rightEyeGreen
+    id: leftEyeGreen
     pin: GPIO8
   - platform: ledc
-    id: rightEyeBlue
+    id: leftEyeBlue
     pin: GPIO20
     max_power: 0.4
 
@@ -133,6 +134,30 @@ sensor:
     name: grasshopperError
     id: grasshopperError
     topic: hermes/nlu/intentNotRecognized
+    on_raw_value:
+      - then:
+          - light.turn_on:
+              id: leftEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 5s
+          - light.turn_on:
+              id: rightEye
+              color: orange
+              color_brightness: '0.5'
+              transition_length: 5s
+  - platform: mqtt_subscribe
+    name: shackOff
+    id: shackOff
+    topic: grasshopperOff
+    on_raw_value:
+      - then:
+          - light.turn_off: leftEye
+          - light.turn_off: rightEye
+  - platform: mqtt_subscribe
+    name: shackOn
+    id: shackOn
+    topic: shackDoorLock
     on_raw_value:
       - then:
           - light.turn_on:

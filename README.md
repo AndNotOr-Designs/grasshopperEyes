@@ -6,6 +6,8 @@ Using 2 OSEEP 10mm RGB LEDs, grasshopper's eyes will light up based on specific 
 3) grasshopper speaking back: red
 4) grasshopper 'sleeping': 'orange' even though it's more yellow in nature, and set to 50% brightness
 5) grasshopper misunderstanding: 'orange' even though it's more yellow in nature, and set to 50% brightness
+6) eyes turn off when grasshopperOff comes from crestron MQTT
+7) eyes turn on 'sleeping' when shack door unlock comes from crestron MQTT
 
 Grasshopper's skull is adapted from:
 https://www.crealitycloud.com/model-detail/skull-printing-model?source=9&profileId=6a95b3ba03962b4e69d14d9e
